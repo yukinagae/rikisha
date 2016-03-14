@@ -1,0 +1,14 @@
+[package]
+name = "riki"
+version = "0.1.0"
+authors = ["Yuki Nagae <yuki.nagae1130@gmail.com>"]
+
+[features]
+watch = ["handlebars-iron/watch"]
+
+[dependencies]
+router = "*"
+iron = "*"
+handlebars-iron = "*"
+rustc-serialize = "*"
+serde_json = "*"
