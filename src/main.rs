@@ -7,7 +7,7 @@ use std::error::Error;
 
 // hbs
 extern crate handlebars_iron as hbs;
-use hbs::{Template, HandlebarsEngine, DirectorySource, MemorySource};
+use hbs::{Template, HandlebarsEngine, DirectorySource};
 
 // riki
 extern crate riki;

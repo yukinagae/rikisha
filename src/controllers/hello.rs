@@ -40,38 +40,80 @@ pub fn make_data () -> BTreeMap<String, Json> {
     data
 }
 
+
+pub type Result = IronResult<Response>;
+
+//
+pub fn ok(body: &str) -> Result {
+    Ok(Response::with((status::Ok, body)))
+}
+
+pub fn bad(body: &str) -> Result {
+    Ok(Response::with((status::BadRequest, body)))
+}
+
+pub fn render(view: &str, data: BTreeMap<String, Json>) -> Result {
+    let mut resp = Response::new();
+    resp.set_mut(Template::new(view, data)).set_mut(status::Ok);
+    Ok(resp)
+}
+
+pub fn param(req: &mut Request, name: &str) -> Option<String> {
+    req.extensions.get::<Router>().unwrap().find(name).map(|x| Some(x.to_string())).unwrap_or(None)
+}
+
 // hello
 pub struct Hello;
 
 impl Hello {
 
-    pub fn index(req: &mut Request) -> IronResult<Response> {
-        Ok(Response::with((status::Ok, "index")))
+    pub fn index(req: &mut Request) -> Result {
+        let data = make_data();
+        render("index", data)
     }
 
-    pub fn new(req: &mut Request) -> IronResult<Response> {
-        Ok(Response::with((status::Ok, "new")))
+    pub fn new(req: &mut Request) -> Result {
+        let mut data = BTreeMap::new();
+        render("new", data)
     }
 
-    pub fn create(req: &mut Request) -> IronResult<Response> {
-        Ok(Response::with((status::Ok, "create")))
+    pub fn create(req: &mut Request) -> Result {
+        let data = make_data();
+        render("index", data)
     }
 
-    pub fn show(req: &mut Request) -> IronResult<Response> {
-        let ref id = req.extensions.get::<Router>().unwrap().find("id").unwrap_or("no id");
-        Ok(Response::with((status::Ok, *id)))
+    pub fn show(req: &mut Request) -> Result {
+        match param(req, "id") {
+            Some(id) => {
+                let mut data = BTreeMap::new();
+                data.insert("id".to_string(), id.to_string().to_json());
+                render("show", data)
+            }
+            None => bad("id is required!")
+        }
     }
 
-    pub fn edit(req: &mut Request) -> IronResult<Response> {
-        Ok(Response::with((status::Ok, "edit")))
+    pub fn edit(req: &mut Request) -> Result {
+        match param(req, "id") {
+            Some(id) => {
+                let mut data = BTreeMap::new();
+                data.insert("id".to_string(), id.to_string().to_json());
+                render("edit", data)
+            }
+            None => bad("id is required!")
+        }
     }
     
-    pub fn update(req: &mut Request) -> IronResult<Response> {
-        Ok(Response::with((status::Ok, "update")))
+    pub fn update(req: &mut Request) -> Result {
+        // TODO
+        let data = make_data();
+        render("index", data)
     }
 
-    pub fn delete(req: &mut Request) -> IronResult<Response> {
-        Ok(Response::with((status::Ok, "delete")))
+    pub fn delete(req: &mut Request) -> Result {
+        // TODO
+        let data = make_data();
+        render("index", data)
     }
 
 }
